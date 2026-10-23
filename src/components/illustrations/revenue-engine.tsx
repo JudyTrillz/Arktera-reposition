@@ -235,12 +235,14 @@ export function RevenueEngine() {
 
         // Base rail — a moving dash pattern so the left-to-right direction
         // of the whole pipeline reads at a glance, even between particles.
-        dashOffset -= dt * 0.03 * speedMul;
         ctx!.save();
         ctx!.strokeStyle = "rgba(247,245,241,0.14)";
         ctx!.lineWidth = 1.5;
-        ctx!.setLineDash([5, 7]);
-        ctx!.lineDashOffset = dashOffset;
+        if (!reduced) {
+          dashOffset -= dt * 0.03 * speedMul;
+          ctx!.setLineDash([5, 7]);
+          ctx!.lineDashOffset = dashOffset;
+        }
         ctx!.beginPath();
         ctx!.moveTo(0, H / 2);
         ctx!.lineTo(W * poolX, H / 2);
@@ -251,8 +253,10 @@ export function RevenueEngine() {
         drawGate("offer", v.offer);
         drawGate("sales", v.sales);
 
-        poolEnergyRef.current +=
-          ((v.output / 100) * speedMul - poolEnergyRef.current) * 0.04;
+        if (!reduced) {
+          poolEnergyRef.current +=
+            ((v.output / 100) * speedMul - poolEnergyRef.current) * 0.04;
+        }
         drawPool(reduced ? v.output / 100 : poolEnergyRef.current);
 
         if (!reduced) {
@@ -319,13 +323,19 @@ export function RevenueEngine() {
         }
       }
 
-      if (!reduced && visible) raf = requestAnimationFrame(step);
+      // The loop keeps running even when motion is reduced — the frame
+      // itself has no continuous motion in that case (dash scroll, particle
+      // flow, and the pool's eased approach are all skipped above), but it
+      // still needs to redraw whenever the sliders change the gate heights
+      // and pool size; otherwise the canvas freezes on whatever values were
+      // current the one time it last rendered.
+      if (visible) raf = requestAnimationFrame(step);
     }
 
     const io = new IntersectionObserver(
       (entries) => {
         visible = entries[0]?.isIntersecting ?? true;
-        if (visible && !reduced) {
+        if (visible) {
           cancelAnimationFrame(raf);
           raf = requestAnimationFrame(step);
         }
@@ -340,9 +350,18 @@ export function RevenueEngine() {
     io.observe(container);
     window.addEventListener("resize", debouncedResize);
 
+    // `window.resize` only fires when the browser window itself changes
+    // size, not when this container's own size changes for another reason
+    // (a web font swapping in, an image above it finishing load). Those
+    // reflows are slower and more common on mobile, and without this the
+    // canvas can stay sized for a layout that no longer matches.
+    const ro = new ResizeObserver(debouncedResize);
+    ro.observe(container);
+
     return () => {
       cancelAnimationFrame(raf);
       io.disconnect();
+      ro.disconnect();
       window.removeEventListener("resize", debouncedResize);
     };
     // Slider values are read fresh from valuesRef every frame, so the loop

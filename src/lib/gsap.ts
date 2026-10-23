@@ -11,6 +11,23 @@ if (typeof window !== "undefined") {
   // scroll-triggered animations never firing (or pinned sections glitching)
   // on real phones despite working fine in desktop testing.
   ScrollTrigger.config({ ignoreMobileResize: true });
+
+  // Every ScrollTrigger start/end position is computed from each element's
+  // on-screen position at the moment it's created. If that happens before
+  // web fonts swap in or images finish loading — both slower on mobile —
+  // the page is still shorter/shaped differently than its final layout, so
+  // trigger points end up calculated against stale positions and some
+  // reveals never fire where expected. One refresh once everything has
+  // genuinely settled corrects every trigger on the page in one pass.
+  const refreshAll = () => ScrollTrigger.refresh();
+  if (document.readyState === "complete") {
+    refreshAll();
+  } else {
+    window.addEventListener("load", refreshAll, { once: true });
+  }
+  if ("fonts" in document) {
+    document.fonts.ready.then(refreshAll);
+  }
 }
 
 export { gsap, ScrollTrigger };

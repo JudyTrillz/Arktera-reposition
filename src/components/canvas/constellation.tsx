@@ -151,9 +151,19 @@ export function Constellation({
       canvas.addEventListener("pointerleave", onLeave);
     }
 
+    // `window.resize` only fires when the browser window itself changes
+    // size, not when this container's own size changes for another reason
+    // (a web font swapping in, an image above it finishing load). Those
+    // reflows are slower and more common on mobile, and without this the
+    // canvas — and its particle count, sized from W*H at resize time — can
+    // stay wrong for the hero's actual final layout.
+    const ro = new ResizeObserver(debouncedResize);
+    ro.observe(container);
+
     return () => {
       cancelAnimationFrame(raf);
       io.disconnect();
+      ro.disconnect();
       window.removeEventListener("resize", debouncedResize);
       if (interactive) {
         window.removeEventListener("pointermove", onMove);
