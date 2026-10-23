@@ -22,6 +22,13 @@ export function RevenueSystem() {
   // the section's own clientWidth (scrollbar excluded) keeps every panel
   // exactly as wide as the content area really is.
   const [panelWidth, setPanelWidth] = useState<number | null>(null);
+  // Pin + horizontal-scrub is a desktop-only interaction: on real mobile
+  // browsers the dynamic toolbar resizes the viewport mid-scroll, which
+  // throws off the pin's distance math, and touch scroll doesn't drive a
+  // scrubbed pin the way wheel scroll does. Below `lg` (matches the site's
+  // other mobile/desktop breakpoint), fall back to the same simple
+  // vertical-stack layout already used for prefers-reduced-motion.
+  const [isDesktop, setIsDesktop] = useState(false);
 
   useEffect(() => {
     // Intentional two-pass hydration: this value only exists on the client,
@@ -37,14 +44,17 @@ export function RevenueSystem() {
     if (!section) return;
     function measure() {
       setPanelWidth(section!.clientWidth);
+      setIsDesktop(window.innerWidth >= 1024);
     }
     measure();
     window.addEventListener("resize", measure);
     return () => window.removeEventListener("resize", measure);
   }, []);
 
+  const simpleLayout = reduced || !isDesktop;
+
   useEffect(() => {
-    if (reduced) return;
+    if (simpleLayout) return;
     const section = sectionRef.current;
     const track = trackRef.current;
     if (!section || !track) return;
@@ -73,7 +83,7 @@ export function RevenueSystem() {
     }, section);
 
     return () => ctx.revert();
-  }, [reduced]);
+  }, [simpleLayout]);
 
   const panelBase =
     "flex h-full shrink-0 flex-col justify-center px-[7vw] sm:px-[9vw]";
@@ -83,7 +93,7 @@ export function RevenueSystem() {
       ref={sectionRef}
       id="revenue-system"
       className="relative overflow-hidden bg-ink"
-      style={reduced ? undefined : { height: "100svh" }}
+      style={simpleLayout ? undefined : { height: "100svh" }}
     >
       <div className="grain -z-10" aria-hidden="true" />
       <div
@@ -98,15 +108,15 @@ export function RevenueSystem() {
       <div
         ref={trackRef}
         className={
-          reduced
+          simpleLayout
             ? "flex w-full flex-col"
             : "flex h-full w-max flex-row"
         }
       >
         {/* Panel 0 — intro */}
         <div
-          className={reduced ? "flex flex-col justify-center px-6 py-24 sm:px-12" : `${panelBase} w-screen`}
-          style={reduced || !panelWidth ? undefined : { width: panelWidth }}
+          className={simpleLayout ? "flex flex-col justify-center px-6 py-24 sm:px-12" : `${panelBase} w-screen`}
+          style={simpleLayout || !panelWidth ? undefined : { width: panelWidth }}
         >
           <p className="font-sans text-[0.78rem] font-semibold uppercase tracking-[0.2em] text-accent">
             The Arktera Revenue System
@@ -121,7 +131,7 @@ export function RevenueSystem() {
             lasting relationships &mdash; a weakness in one area can limit
             the results of the entire business.
           </p>
-          {!reduced && (
+          {!simpleLayout && (
             <p className="mt-10 font-sans text-sm font-medium uppercase tracking-[0.2em] text-paper/35">
               Scroll to explore the six stages &rarr;
             </p>
@@ -132,8 +142,8 @@ export function RevenueSystem() {
         {revenueStages.map((stage, i) => (
           <div
             key={stage.id}
-            className={reduced ? "flex flex-col justify-center border-t border-paper/10 px-6 py-24 sm:px-12" : `${panelBase} w-screen`}
-            style={reduced || !panelWidth ? undefined : { width: panelWidth }}
+            className={simpleLayout ? "flex flex-col justify-center border-t border-paper/10 px-6 py-24 sm:px-12" : `${panelBase} w-screen`}
+            style={simpleLayout || !panelWidth ? undefined : { width: panelWidth }}
           >
             <div className="flex items-start gap-6 sm:gap-10">
               <span className="font-display text-6xl leading-none text-paper/15 sm:text-8xl">
@@ -165,8 +175,8 @@ export function RevenueSystem() {
 
         {/* Closing panel */}
         <div
-          className={reduced ? "flex flex-col justify-center border-t border-paper/10 px-6 py-24 text-center sm:px-12" : `${panelBase} w-screen items-center text-center`}
-          style={reduced || !panelWidth ? undefined : { width: panelWidth }}
+          className={simpleLayout ? "flex flex-col justify-center border-t border-paper/10 px-6 py-24 text-center sm:px-12" : `${panelBase} w-screen items-center text-center`}
+          style={simpleLayout || !panelWidth ? undefined : { width: panelWidth }}
         >
           <p className="mx-auto max-w-2xl font-display text-[clamp(1.9rem,3vw+1rem,3.2rem)] leading-[1.1] text-paper text-balance">
             Find out what&apos;s holding your business back.
@@ -184,7 +194,7 @@ export function RevenueSystem() {
         </div>
       </div>
 
-      {!reduced && (
+      {!simpleLayout && (
         <div className="pointer-events-none absolute inset-x-0 bottom-8 flex justify-center gap-2.5">
           {Array.from({ length: PANEL_COUNT }).map((_, i) => (
             <span
