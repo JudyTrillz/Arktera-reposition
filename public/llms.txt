@@ -1,0 +1,34 @@
+# Arktera Systems
+
+> Arktera Systems helps service businesses uncover and fix the problems stopping them from getting more customers, winning more sales, and growing revenue. We find the cause, design the solution, and help put it into action.
+
+Arktera Systems is a revenue systems consultancy for service businesses. Rather than treating marketing, sales, pricing, delivery, and retention as separate problems, Arktera examines how these parts of a business work together — demand, trust, conversion, delivery, retention, and referral — to diagnose where revenue is actually being lost and what to fix first.
+
+## Core Pages
+
+- [Home](https://arkterasystems.com/): Overview of what Arktera does and how it helps service businesses find and fix what's holding back revenue.
+- [About](https://arkterasystems.com/about): Arktera's approach, the five-stage process (Assess, Diagnose, Design, Build, Measure), why Arktera takes a systems view, and the founder's perspective.
+- [The Revenue System](https://arkterasystems.com/revenue-systems): The six-stage framework — Demand, Trust, Conversion, Delivery, Retention, Referral — used to diagnose where a business's revenue system is breaking down.
+- [Free Business Growth Assessment](https://arkterasystems.com/business-growth-assessment): A free, structured assessment business owners can complete to share their goals, challenges, and performance ahead of a conversation with Arktera.
+- [Insights](https://arkterasystems.com/insights): Practical analysis on revenue performance, customer conversion, profitability, and operational efficiency.
+- [Contact](https://arkterasystems.com/contact): How to reach Arktera Systems directly.
+
+## Insights Articles
+
+- [Before You Spend More on Marketing, Find Out Where Your Revenue Is Leaking](https://arkterasystems.com/insights/before-you-spend-more-on-marketing): More marketing doesn't always mean more revenue — how to trace the journey from spend to sales and find out where opportunities are being lost.
+- [Getting Website Traffic but No Inquiries? How to Find the Conversion Problem](https://arkterasystems.com/insights/website-traffic-no-inquiries): Your website attracts visitors, but few inquire — how to investigate traffic quality, offer clarity, trust, and UX to find the real conversion problem.
+- [Why Businesses Lose Sales After the First Inquiry](https://arkterasystems.com/insights/why-businesses-lose-sales-after-the-first-inquiry): How delayed responses, weak follow-up, and unclear next steps can quietly undermine sales after the first inquiry.
+- [Revenue Is Growing, but Profit Isn't: What Should You Investigate?](https://arkterasystems.com/insights/revenue-growing-profit-isnt): How to examine margins, pricing, and delivery costs to find out why a business is selling more without keeping more.
+- [How to Price Your Services Without Guessing or Undercutting Yourself](https://arkterasystems.com/insights/how-to-price-your-services): How to assess costs, profit needs, and customer value before setting or changing service prices.
+- [More Sales, Less Profit: The Hidden Economics of Service Delivery](https://arkterasystems.com/insights/more-sales-less-profit): How rising delivery costs, rework, and scope creep quietly weaken profitability even as sales grow.
+- [How to Diagnose a Weak Sales Pipeline Before Buying More Leads](https://arkterasystems.com/insights/diagnose-a-weak-sales-pipeline): An inconsistent pipeline doesn't always mean you need more leads — how to diagnose weak qualification, follow-up, and stalled opportunities first.
+- [CRM vs Spreadsheet: When Does a Business Actually Need a CRM?](https://arkterasystems.com/insights/crm-vs-spreadsheet): When a spreadsheet is still enough to manage customers and a pipeline, and when a business actually needs a CRM.
+- [How to Calculate the Cost of a Lost Sales Opportunity](https://arkterasystems.com/insights/cost-of-a-lost-sales-opportunity): How to calculate the real cost of a lost sales opportunity and prioritize which sales problems to fix first.
+- [Why Customer Retention Matters More Than Just Winning the Next Sale](https://arkterasystems.com/insights/why-customer-retention-matters): Why customers stop buying, and how to strengthen retention without cutting into profitability.
+- [How to Build a Follow-Up System That Generates Repeat Business](https://arkterasystems.com/insights/build-a-follow-up-system): How to build a practical follow-up system that generates repeat business without relying on memory.
+- [Late Payments Are More Than an Accounting Problem: How They Constrain Growth](https://arkterasystems.com/insights/late-payments-constrain-growth): How to diagnose payment delays and improve cash-flow management so late payments stop constraining growth.
+
+## Optional
+
+- [Terms of Service](https://arkterasystems.com/terms-of-service)
+- [Privacy Policy](https://arkterasystems.com/privacy-policy)

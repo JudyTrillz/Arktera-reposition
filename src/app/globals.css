@@ -1,0 +1,483 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-ink: #0a0a0c;
+  --color-surface: #141418;
+  --color-surface-2: #1b1b20;
+  --color-paper: #f7f5f1;
+  --color-paper-muted: #ece8e0;
+  --color-accent: #ff3b30;
+  --color-accent-soft: #ff8a7a;
+  --color-gold: #d4a95e;
+  --color-line-dark: rgb(247 245 241 / 0.12);
+  --color-line-light: rgb(10 10 12 / 0.1);
+
+  --font-display: var(--font-bebas-neue);
+  --font-sans: var(--font-inter);
+
+  --animate-marquee: marquee 28s linear infinite;
+  --animate-drift: drift 16s ease-in-out infinite;
+  --animate-pulse-soft: pulse-soft 3s ease-in-out infinite;
+  --animate-flow-dash: flow-dash 1.8s linear infinite;
+  --animate-drip-1: drip-fall 1.6s ease-in infinite;
+  --animate-drip-2: drip-fall 1.6s ease-in infinite 0.45s;
+  --animate-drip-3: drip-fall 1.6s ease-in infinite 0.9s;
+
+  @keyframes marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  @keyframes drift {
+    0%,
+    100% {
+      transform: translate(0, 0);
+    }
+    50% {
+      transform: translate(2%, -3%);
+    }
+  }
+  @keyframes pulse-soft {
+    0%,
+    100% {
+      opacity: 0.5;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+  @keyframes flow-dash {
+    to {
+      stroke-dashoffset: -10;
+    }
+  }
+  @keyframes drip-fall {
+    0% {
+      transform: translateY(0);
+      opacity: 0;
+    }
+    18% {
+      opacity: 1;
+    }
+    78% {
+      opacity: 0.9;
+    }
+    100% {
+      transform: translateY(15px);
+      opacity: 0;
+    }
+  }
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html {
+  scroll-behavior: smooth;
+  /* `clip`, not `hidden`: `hidden` on only the x-axis forces the browser to
+     compute overflow-y as `auto`, which turns html/body into a scroll
+     container and breaks `position: sticky` for every descendant (it was
+     stuck pinning to that container's scrollTop, which never moves, instead
+     of the real viewport). `clip` blocks the same horizontal overflow
+     without that side effect — overflow-y stays `visible`. */
+  overflow-x: clip;
+}
+
+body {
+  background: var(--color-ink);
+  color: var(--color-paper);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  cursor: default;
+  overflow-x: clip;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+::selection {
+  background: var(--color-accent);
+  color: var(--color-paper);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+.container-arktera {
+  width: 100%;
+  max-width: 90rem;
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 4vw, 4rem);
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+
+/* Grain texture — layered over dark sections for filmic depth */
+.grain {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.4;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+}
+
+/* Duotone treatment for photography — keeps imagery inside the brand palette
+   instead of dropping raw stock-photo color into the layout. Position is set
+   per usage via a Tailwind utility (relative/absolute) rather than here, so
+   this unlayered rule can't win the cascade over that utility class. */
+.duotone {
+  isolation: isolate;
+}
+.duotone img {
+  filter: grayscale(1) contrast(1.2) brightness(0.62);
+}
+.duotone::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  mix-blend-mode: multiply;
+  background: linear-gradient(160deg, rgba(255, 59, 48, 0.55) 0%, rgba(10, 10, 12, 0.96) 100%);
+}
+.duotone::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: linear-gradient(180deg, transparent 35%, rgba(10, 10, 12, 0.65) 100%);
+}
+
+/* Custom cursor dot + ring (desktop, fine-pointer only — see CustomCursor component) */
+.cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 34px;
+  height: 34px;
+  margin: -17px 0 0 -17px;
+  border: 1px solid var(--color-paper);
+  border-radius: 999px;
+  pointer-events: none;
+  z-index: 200;
+  mix-blend-mode: difference;
+  transition: transform 0.15s ease-out, width 0.25s ease, height 0.25s ease, margin 0.25s ease, opacity 0.2s ease;
+  will-change: transform;
+}
+.cursor-dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  background: var(--color-paper);
+  border-radius: 999px;
+  pointer-events: none;
+  z-index: 200;
+  mix-blend-mode: difference;
+  will-change: transform;
+}
+
+.line-fade-in {
+  overflow: hidden;
+}
+
+/* Replays on mount — pair with a React `key` change so swapping captions
+   (flow-chain stage text, etc.) reads as a deliberate crossfade. */
+@keyframes caption-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.caption-in {
+  animation: caption-in 0.4s ease-out both;
+}
+
+/* Firework burst — plays once on mount (remount via a changing `key`),
+   stays at its spent final frame via `forwards`. Reduced motion is handled
+   globally (see the prefers-reduced-motion block above). */
+@keyframes firework-spark {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--dx), var(--dy)) scale(0.3);
+    opacity: 0;
+  }
+}
+.firework-spark {
+  animation: firework-spark 0.6s ease-out forwards;
+}
+@keyframes firework-ring {
+  0% {
+    transform: scale(0.3);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+.firework-ring {
+  animation: firework-ring 0.55s ease-out forwards;
+}
+
+/* Background star sparkles — a slow, staggered twinkle (each instance sets
+   its own animation-delay inline). Reduced motion is handled globally. */
+@keyframes sparkle-twinkle {
+  0%,
+  100% {
+    opacity: 0.15;
+    transform: scale(0.7);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+.sparkle-twinkle {
+  animation: sparkle-twinkle 2.8s ease-in-out infinite;
+}
+
+/* Revenue Engine sliders — the thumb color is set per-lever inline via
+   the --thumb-color custom property. */
+.engine-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  border-radius: 999px;
+  background: rgb(247 245 241 / 0.12);
+  cursor: pointer;
+}
+.engine-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 16px;
+  width: 16px;
+  border-radius: 999px;
+  background: var(--thumb-color, var(--color-accent));
+  box-shadow: 0 0 10px 1px color-mix(in srgb, var(--thumb-color, var(--color-accent)) 70%, transparent);
+  border: 2px solid rgb(10 10 12 / 0.6);
+  cursor: pointer;
+}
+.engine-slider::-moz-range-thumb {
+  height: 16px;
+  width: 16px;
+  border-radius: 999px;
+  background: var(--thumb-color, var(--color-accent));
+  box-shadow: 0 0 10px 1px color-mix(in srgb, var(--thumb-color, var(--color-accent)) 70%, transparent);
+  border: 2px solid rgb(10 10 12 / 0.6);
+  cursor: pointer;
+}
+.engine-slider::-moz-range-track {
+  height: 4px;
+  border-radius: 999px;
+  background: rgb(247 245 241 / 0.12);
+}
+
+/* 404 numeral — a restrained "signal glitch": static almost all the time,
+   briefly slicing into mis-registered color layers once per cycle. Reduced
+   motion is handled globally (see the prefers-reduced-motion block above),
+   which zeroes these animation durations and leaves the numeral static. */
+.glitch-404 {
+  position: relative;
+  display: inline-block;
+  isolation: isolate;
+}
+.glitch-404::before,
+.glitch-404::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  color: var(--color-accent);
+}
+.glitch-404::before {
+  clip-path: inset(0 0 55% 0);
+  animation: glitch-404-a 5.2s infinite;
+}
+.glitch-404::after {
+  color: var(--color-gold);
+  clip-path: inset(55% 0 0 0);
+  animation: glitch-404-b 5.2s infinite;
+}
+.glitch-404:hover::before,
+.glitch-404:hover::after {
+  animation-duration: 1.1s;
+}
+@keyframes glitch-404-a {
+  0%,
+  92%,
+  100% {
+    transform: translate(0, 0);
+    opacity: 0;
+  }
+  93% {
+    transform: translate(-6px, -2px);
+    opacity: 1;
+  }
+  95% {
+    transform: translate(4px, 1px);
+    opacity: 1;
+  }
+  97% {
+    transform: translate(-3px, 0);
+    opacity: 1;
+  }
+  98% {
+    opacity: 0;
+  }
+}
+@keyframes glitch-404-b {
+  0%,
+  91%,
+  100% {
+    transform: translate(0, 0);
+    opacity: 0;
+  }
+  92% {
+    transform: translate(6px, 1px);
+    opacity: 1;
+  }
+  94.5% {
+    transform: translate(-4px, -1px);
+    opacity: 1;
+  }
+  96.5% {
+    transform: translate(3px, 0);
+    opacity: 1;
+  }
+  98% {
+    opacity: 0;
+  }
+}
+
+/* Revenue Flywheel — continuous orbit marker. Duration is set per-instance
+   inline (speed reflects system performance). Reduced motion is handled
+   globally (see the prefers-reduced-motion block above). */
+@keyframes spin-flywheel {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Insights Gateway — a single-file vertical ticker, one question at a time:
+   it rises, snaps into sharp focus crossing the center "Analysis Line",
+   continues up, and clears fully before the next one begins. Pure CSS, no
+   JS per frame. Every node shares this exact keyframe definition and is
+   phase-shifted via a negative animation-delay (see insights-gateway.tsx) —
+   each gets an equal, non-overlapping slice of the shared loop, so only one
+   question is ever visible at once. The 0%/2% and 15.1%/100% pairs hold
+   identical values on purpose: that's what parks a node fully hidden for
+   the rest of the loop between its turns, instead of drifting back through
+   the visible band. Reduced motion is handled globally (see the
+   prefers-reduced-motion block above), which freezes every node at its 0%
+   frame (hidden) — acceptable since the graphic is purely decorative
+   (aria-hidden) and never the only carrier of content. */
+@keyframes insight-node-float {
+  0%,
+  1.3% {
+    transform: translate(-50%, calc(-50% + 7rem));
+    filter: blur(6px);
+    opacity: 0;
+    color: rgb(247 245 241 / 0.5);
+  }
+  2.5% {
+    transform: translate(-50%, calc(-50% + 1.1rem));
+    filter: blur(3px);
+    opacity: 0.6;
+    color: rgb(247 245 241 / 0.5);
+  }
+  4.2% {
+    transform: translate(-50%, -50%);
+    filter: blur(0px);
+    opacity: 1;
+    color: var(--color-paper);
+    text-shadow: 0 0 22px rgb(255 59 48 / 0.45);
+  }
+  /* Long sharp hold — the text sits fully in focus and fully readable from
+     here through 11.67% (~3.3s on a 36s loop) before it starts exiting. */
+  11.67% {
+    transform: translate(-50%, calc(-50% - 0.7rem));
+    filter: blur(0px);
+    opacity: 1;
+    color: var(--color-paper);
+    text-shadow: 0 0 22px rgb(255 59 48 / 0.45);
+  }
+  13.89% {
+    transform: translate(-50%, calc(-50% - 2.4rem));
+    filter: blur(5px);
+    opacity: 0;
+    color: rgb(247 245 241 / 0.5);
+  }
+  13.99%,
+  100% {
+    transform: translate(-50%, calc(-50% + 7rem));
+    filter: blur(6px);
+    opacity: 0;
+    color: rgb(247 245 241 / 0.5);
+  }
+}
+.insight-node {
+  animation-name: insight-node-float;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  color: rgb(247 245 241 / 0.5);
+  will-change: transform, filter, opacity;
+}
+
+@keyframes insight-tag-reveal {
+  0%,
+  1.3% {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  4.2%,
+  11.67% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  13.89%,
+  100% {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+.insight-tag {
+  animation-name: insight-tag-reveal;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  opacity: 0;
+}
+
+/* Hairline rules that fit both ink and paper sections */
+.rule-dark {
+  border-color: var(--color-line-dark);
+}
+.rule-light {
+  border-color: var(--color-line-light);
+}

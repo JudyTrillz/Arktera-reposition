@@ -1,0 +1,166 @@
+"use client";
+
+import { useEffect, useRef } from "react";
+import { debounce } from "@/lib/debounce";
+
+type Props = {
+  className?: string;
+  density?: number;
+  accentRatio?: number;
+  interactive?: boolean;
+};
+
+type Node = {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  r: number;
+  accent: boolean;
+};
+
+export function Constellation({
+  className,
+  density = 0.00009,
+  accentRatio = 0.12,
+  interactive = true,
+}: Props) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const container = canvas.parentElement;
+    if (!container) return;
+
+    let W = 0;
+    let H = 0;
+    let dpr = Math.min(window.devicePixelRatio || 1, 2);
+    let nodes: Node[] = [];
+    let mouse = { x: -9999, y: -9999 };
+    let raf = 0;
+    let visible = true;
+
+    function resize() {
+      const rect = container!.getBoundingClientRect();
+      W = rect.width;
+      H = rect.height;
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas!.width = Math.round(W * dpr);
+      canvas!.height = Math.round(H * dpr);
+      canvas!.style.width = W + "px";
+      canvas!.style.height = H + "px";
+      ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      const count = Math.round(W * H * density);
+      nodes = Array.from({ length: count }, () => ({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        vx: (Math.random() - 0.5) * 0.12,
+        vy: (Math.random() - 0.5) * 0.12,
+        r: Math.random() * 1.4 + 0.6,
+        accent: Math.random() < accentRatio,
+      }));
+    }
+
+    function step() {
+      ctx!.clearRect(0, 0, W, H);
+      const linkDist = Math.min(150, Math.max(90, W * 0.09));
+
+      for (let i = 0; i < nodes.length; i++) {
+        const n = nodes[i];
+        if (!reduced) {
+          n.x += n.vx;
+          n.y += n.vy;
+          if (n.x < 0 || n.x > W) n.vx *= -1;
+          if (n.y < 0 || n.y > H) n.vy *= -1;
+
+          if (interactive) {
+            const dx = mouse.x - n.x;
+            const dy = mouse.y - n.y;
+            const d2 = dx * dx + dy * dy;
+            if (d2 < 14000) {
+              const f = (14000 - d2) / 14000;
+              n.x -= dx * f * 0.012;
+              n.y -= dy * f * 0.012;
+            }
+          }
+        }
+      }
+
+      for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+          const a = nodes[i];
+          const b = nodes[j];
+          const dx = a.x - b.x;
+          const dy = a.y - b.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < linkDist) {
+            const o = (1 - dist / linkDist) * 0.22;
+            ctx!.strokeStyle = `rgba(247,245,241,${o})`;
+            ctx!.lineWidth = 1;
+            ctx!.beginPath();
+            ctx!.moveTo(a.x, a.y);
+            ctx!.lineTo(b.x, b.y);
+            ctx!.stroke();
+          }
+        }
+      }
+
+      for (const n of nodes) {
+        ctx!.beginPath();
+        ctx!.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+        ctx!.fillStyle = n.accent ? "rgba(255,59,48,0.85)" : "rgba(247,245,241,0.55)";
+        ctx!.fill();
+      }
+
+      if (!reduced && visible) raf = requestAnimationFrame(step);
+    }
+
+    const onMove = (e: PointerEvent) => {
+      const rect = canvas!.getBoundingClientRect();
+      mouse = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+    };
+    const onLeave = () => {
+      mouse = { x: -9999, y: -9999 };
+    };
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        visible = entries[0].isIntersecting;
+        if (visible && !reduced) {
+          cancelAnimationFrame(raf);
+          raf = requestAnimationFrame(step);
+        }
+      },
+      { threshold: 0 },
+    );
+
+    const debouncedResize = debounce(resize, 150);
+
+    resize();
+    step();
+    io.observe(container);
+    window.addEventListener("resize", debouncedResize);
+    if (interactive) {
+      window.addEventListener("pointermove", onMove);
+      canvas.addEventListener("pointerleave", onLeave);
+    }
+
+    return () => {
+      cancelAnimationFrame(raf);
+      io.disconnect();
+      window.removeEventListener("resize", debouncedResize);
+      if (interactive) {
+        window.removeEventListener("pointermove", onMove);
+        canvas.removeEventListener("pointerleave", onLeave);
+      }
+    };
+  }, [density, accentRatio, interactive]);
+
+  return <canvas ref={canvasRef} className={className} aria-hidden="true" />;
+}
