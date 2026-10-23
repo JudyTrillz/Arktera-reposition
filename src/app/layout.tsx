@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { MotionConfig } from "motion/react";
 import { bebasNeue, inter } from "@/lib/fonts";
 import { CustomCursor } from "@/components/ui/custom-cursor";
 import { ToastProvider } from "@/components/ui/toast";
@@ -48,9 +49,11 @@ export default function RootLayout({
         >
           Skip to main content
         </a>
-        <CustomCursor />
-        <ToastProvider>{children}</ToastProvider>
-        <ScrollToTop />
+        <MotionConfig reducedMotion="user">
+          <CustomCursor />
+          <ToastProvider>{children}</ToastProvider>
+          <ScrollToTop />
+        </MotionConfig>
       </body>
     </html>
   );

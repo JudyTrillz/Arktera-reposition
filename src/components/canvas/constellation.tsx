@@ -47,6 +47,7 @@ export function Constellation({
 
     function resize() {
       const rect = container!.getBoundingClientRect();
+      const prevW = W;
       W = rect.width;
       H = rect.height;
       dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -56,15 +57,27 @@ export function Constellation({
       canvas!.style.height = H + "px";
       ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-      const count = Math.round(W * H * density);
-      nodes = Array.from({ length: count }, () => ({
-        x: Math.random() * W,
-        y: Math.random() * H,
-        vx: (Math.random() - 0.5) * 0.12,
-        vy: (Math.random() - 0.5) * 0.12,
-        r: Math.random() * 1.4 + 0.6,
-        accent: Math.random() < accentRatio,
-      }));
+      // Mobile browsers resize the viewport height (not width) as their
+      // address bar shows/hides mid-scroll. Regenerating every node from
+      // scratch on that resize made the whole field visibly jump/reset for
+      // no layout reason — only regenerate when the width actually changed
+      // (or on first run); otherwise just keep the existing nodes and clamp
+      // them into the new height.
+      if (prevW === 0 || Math.round(prevW) !== Math.round(W)) {
+        const count = Math.round(W * H * density);
+        nodes = Array.from({ length: count }, () => ({
+          x: Math.random() * W,
+          y: Math.random() * H,
+          vx: (Math.random() - 0.5) * 0.12,
+          vy: (Math.random() - 0.5) * 0.12,
+          r: Math.random() * 1.4 + 0.6,
+          accent: Math.random() < accentRatio,
+        }));
+      } else {
+        for (const n of nodes) {
+          n.y = Math.min(n.y, H);
+        }
+      }
     }
 
     function step() {

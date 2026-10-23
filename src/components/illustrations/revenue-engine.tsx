@@ -159,6 +159,15 @@ export function RevenueEngine() {
       canvas!.style.width = `${W}px`;
       canvas!.style.height = `${H}px`;
       ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      // Clamp in-flight particles into the (possibly new) height instead of
+      // leaving them positioned for the old one — this canvas doesn't
+      // regenerate its particles on resize (they're spawned continuously
+      // from state), so without this a mobile address-bar resize mid-scroll
+      // could leave particles briefly outside the visible canvas.
+      for (const p of particles) {
+        p.y = Math.min(Math.max(p.y, 0), H);
+      }
     }
 
     function drawGate(lever: Lever, value: number) {

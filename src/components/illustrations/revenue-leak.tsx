@@ -30,7 +30,6 @@ export function RevenueLeakDiagram({ rowsRef }: RevenueLeakDiagramProps) {
   useEffect(() => {
     const rows = rowsRef.current;
     if (!rows) return;
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     function applyProgress(progress: number) {
       const y = TOP + (progress / (COUNT - 1)) * (BOTTOM - TOP);
@@ -46,22 +45,42 @@ export function RevenueLeakDiagram({ rowsRef }: RevenueLeakDiagramProps) {
       }
     }
 
-    if (reduced) {
-      applyProgress(0);
-      return;
-    }
+    // This diagram's own container is `hidden` below `lg` (see problem.tsx) —
+    // on mobile it's invisible, so a scrubbed ScrollTrigger writing SVG
+    // attributes on every scroll tick would just burn CPU for nothing.
+    // matchMedia scopes creation to the widths where it's actually shown,
+    // and also handles reduced-motion the same way every other GSAP piece
+    // in this codebase does.
+    const mm = gsap.matchMedia();
+    mm.add(
+      {
+        isDesktop: "(min-width: 1024px)",
+        reduced: "(prefers-reduced-motion: reduce)",
+      },
+      (context) => {
+        const { isDesktop, reduced } = context.conditions as {
+          isDesktop: boolean;
+          reduced: boolean;
+        };
 
-    const ctx = gsap.context(() => {
-      ScrollTrigger.create({
-        trigger: rows,
-        start: "top center",
-        end: "bottom center",
-        scrub: 0.3,
-        onUpdate: (self) => applyProgress(self.progress * (COUNT - 1)),
-      });
-    });
+        if (reduced || !isDesktop) {
+          applyProgress(0);
+          return;
+        }
 
-    return () => ctx.revert();
+        const st = ScrollTrigger.create({
+          trigger: rows,
+          start: "top center",
+          end: "bottom center",
+          scrub: 0.3,
+          onUpdate: (self) => applyProgress(self.progress * (COUNT - 1)),
+        });
+
+        return () => st.kill();
+      },
+    );
+
+    return () => mm.revert();
   }, [rowsRef]);
 
   return (

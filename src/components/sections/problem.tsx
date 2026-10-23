@@ -20,26 +20,51 @@ function FocusRow({
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduced) return;
 
-    const ctx = gsap.context(() => {
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: el,
-          start: "top bottom",
-          end: "bottom top",
-          scrub: 0.3,
-        },
-      });
-      tl.fromTo(
-        el,
-        { opacity: 0.3, filter: "blur(3px)" },
-        { opacity: 1, filter: "blur(0px)", ease: "none", duration: 0.5 },
-      ).to(el, { opacity: 0.3, filter: "blur(3px)", ease: "none", duration: 0.5 });
-    });
+    // The blur+opacity "focus wave" is scrubbed to scroll position, which
+    // means it recomputes a CSS filter on every scroll tick — expensive on
+    // mobile GPUs, and not worth it on small screens where only one row is
+    // ever in view anyway. Desktop keeps the full effect; mobile and
+    // reduced-motion just show the row at full opacity with no filter.
+    const mm = gsap.matchMedia();
+    mm.add(
+      {
+        isDesktop: "(min-width: 1024px)",
+        reduced: "(prefers-reduced-motion: reduce)",
+      },
+      (context) => {
+        const { isDesktop, reduced } = context.conditions as {
+          isDesktop: boolean;
+          reduced: boolean;
+        };
 
-    return () => ctx.revert();
+        if (reduced || !isDesktop) {
+          gsap.set(el, { opacity: 1, filter: "none" });
+          return;
+        }
+
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: el,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: 0.3,
+          },
+        });
+        tl.fromTo(
+          el,
+          { opacity: 0.3, filter: "blur(3px)" },
+          { opacity: 1, filter: "blur(0px)", ease: "none", duration: 0.5 },
+        ).to(el, { opacity: 0.3, filter: "blur(3px)", ease: "none", duration: 0.5 });
+
+        return () => {
+          tl.scrollTrigger?.kill();
+          tl.kill();
+        };
+      },
+    );
+
+    return () => mm.revert();
   }, []);
 
   return (
