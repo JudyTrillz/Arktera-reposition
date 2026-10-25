@@ -93,11 +93,19 @@ export function Constellation({
       // be slower, just because it's rendering fewer frames. Scaling by real
       // elapsed time keeps the field moving at its intended speed regardless
       // of achieved frame rate; at a true 60fps (desktop today) this factor
-      // is ~1, so desktop's motion is unchanged. Clamped like
-      // revenue-engine.tsx's canvas to avoid a large jump after the tab was
-      // backgrounded.
+      // is ~1, so desktop's motion is unchanged.
+      //
+      // The clamp only needs to guard against the one-off large dt that
+      // follows a real gap in rendering (tab backgrounded, or scrolled out
+      // of view and IntersectionObserver paused the loop) — lastTs is reset
+      // to null in both of those resume paths below, so step() treats the
+      // first frame back as t=0 instead of computing a huge dt. That means
+      // this clamp is only ever hit by a single bad frame mid-session, not
+      // by a mobile device's sustained frame rate — so it can stay high
+      // enough that a phone rendering this canvas at a genuine 15-20fps
+      // under load still gets fully compensated instead of throttled.
       if (lastTs == null) lastTs = ts;
-      const dt = Math.min(48, ts - lastTs);
+      const dt = Math.min(120, ts - lastTs);
       lastTs = ts;
       const dtScale = dt / (1000 / 60);
 
@@ -166,6 +174,7 @@ export function Constellation({
       (entries) => {
         visible = entries[0].isIntersecting;
         if (visible && !reduced) {
+          lastTs = null;
           cancelAnimationFrame(raf);
           raf = requestAnimationFrame(step);
         }
@@ -173,12 +182,20 @@ export function Constellation({
       { threshold: 0 },
     );
 
+    // requestAnimationFrame itself already pauses while the tab is
+    // backgrounded, but resuming still hands step() a ts far ahead of the
+    // lastTs from before — same large-dt situation as above, same fix.
+    const onVisibilityChange = () => {
+      if (!document.hidden) lastTs = null;
+    };
+
     const debouncedResize = debounce(resize, 150);
 
     resize();
     step(performance.now());
     io.observe(container);
     window.addEventListener("resize", debouncedResize);
+    document.addEventListener("visibilitychange", onVisibilityChange);
     if (interactive) {
       window.addEventListener("pointermove", onMove);
       canvas.addEventListener("pointerleave", onLeave);
@@ -198,6 +215,7 @@ export function Constellation({
       io.disconnect();
       ro.disconnect();
       window.removeEventListener("resize", debouncedResize);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
       if (interactive) {
         window.removeEventListener("pointermove", onMove);
         canvas.removeEventListener("pointerleave", onLeave);

@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Constellation } from "@/components/canvas/constellation";
 import { SplitHeadline } from "@/components/ui/split-headline";
 import { Button, ArrowIcon } from "@/components/ui/button";
@@ -17,12 +18,26 @@ const MARQUEE_ITEMS = [
 ];
 
 export function Hero() {
+  // Touch devices never get the cursor-repulsion effect that makes the
+  // field feel more alive on desktop (there's no hover), so on top of the
+  // base 4x they get a bit more ambient drift to stay just as noticeable.
+  const [particleSpeed, setParticleSpeed] = useState(4);
+
+  useEffect(() => {
+    const coarsePointer = window.matchMedia("(pointer: coarse)").matches;
+    if (coarsePointer) setParticleSpeed(6);
+  }, []);
+
   return (
     <section
       id="hero"
       className="relative isolate flex min-h-[100svh] flex-col overflow-clip bg-ink pt-20"
     >
-      <Constellation className="absolute inset-0 -z-10 h-full w-full" density={0.00011} speed={4} />
+      <Constellation
+        className="absolute inset-0 -z-10 h-full w-full"
+        density={0.00011}
+        speed={particleSpeed}
+      />
       <div className="grain -z-10" aria-hidden="true" />
       <div
         className="pointer-events-none absolute inset-0 -z-10"
