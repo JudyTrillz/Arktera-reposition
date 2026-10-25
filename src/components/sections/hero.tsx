@@ -3,7 +3,7 @@
 import { Constellation } from "@/components/canvas/constellation";
 import { SplitHeadline } from "@/components/ui/split-headline";
 import { Button, ArrowIcon } from "@/components/ui/button";
-import { assessmentHref } from "@/lib/site-config";
+import { assessmentHref, scheduleAssessmentHref } from "@/lib/site-config";
 
 const MARQUEE_ITEMS = [
   "Revenue Diagnostics",
@@ -56,7 +56,7 @@ export function Hero() {
           <Button href={assessmentHref} tone="dark" variant="solid">
             Get A Free Revenue Assessment
           </Button>
-          <Button href={assessmentHref} tone="dark" variant="outline">
+          <Button href={scheduleAssessmentHref} tone="dark" variant="outline">
             Schedule a Free Revenue Assessment
           </Button>
         </div>
@@ -71,14 +71,14 @@ export function Hero() {
         </a>
       </div>
 
-      <div className="relative border-t border-paper/10 py-5">
+      <div className="relative overflow-hidden border-t border-paper/10 py-5">
         <div className="flex w-[200%] animate-marquee">
           {[0, 1].map((dup) => (
             <div key={dup} className="flex w-1/2 shrink-0 items-center">
               {MARQUEE_ITEMS.map((item, i) => (
                 <span
                   key={`${dup}-${i}`}
-                  className="flex shrink-0 items-center gap-6 px-6 font-display text-xl text-paper/35"
+                  className="flex shrink-0 items-center gap-6 whitespace-nowrap px-6 font-display text-xl text-paper/35"
                 >
                   {item}
                   <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-accent/70" />

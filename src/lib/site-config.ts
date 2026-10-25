@@ -25,6 +25,11 @@ export const navLinks = [
 
 export const assessmentHref = "/business-growth-assessment";
 
+// "Schedule" CTAs book a live call directly, as distinct from the
+// self-serve on-site assessment form above.
+export const scheduleAssessmentHref =
+  "https://calendly.com/hello-arkterasystems/strategy-session";
+
 export const footerColumns = [
   {
     heading: "Explore",

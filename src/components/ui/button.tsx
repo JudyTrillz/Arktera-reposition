@@ -52,11 +52,22 @@ export function Button({
   }
 
   const isExternal = href.startsWith("http") || href.startsWith("mailto:");
+  // A booking/external destination should open alongside the site, not
+  // navigate away from it — but a mailto: link isn't a page to "open in a
+  // new tab," it just hands off to the mail client, so it's excluded.
+  const opensNewTab = href.startsWith("http");
   const classes = clsx(base, variants[tone][variant], className, "transition-transform");
 
   if (isExternal) {
     return (
-      <a href={href} className={classes} onPointerMove={onMove} onPointerLeave={onLeave} ref={ref}>
+      <a
+        href={href}
+        className={classes}
+        onPointerMove={onMove}
+        onPointerLeave={onLeave}
+        ref={ref}
+        {...(opensNewTab ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+      >
         {children}
       </a>
     );

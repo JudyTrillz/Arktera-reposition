@@ -24,6 +24,9 @@
   --animate-drip-3: drip-fall 1.6s ease-in infinite 0.9s;
 
   @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
     to {
       transform: translateX(-50%);
     }

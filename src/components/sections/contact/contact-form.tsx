@@ -7,7 +7,7 @@ import { Button, ArrowIcon } from "@/components/ui/button";
 import { inputClasses } from "@/components/ui/form/styles";
 import { useToast } from "@/components/ui/toast";
 import { SendFlyAnimation } from "@/components/ui/send-fly-animation";
-import { assessmentHref, siteConfig } from "@/lib/site-config";
+import { assessmentHref, scheduleAssessmentHref, siteConfig } from "@/lib/site-config";
 
 const nextSteps = [
   {
@@ -357,7 +357,9 @@ export function ContactForm() {
                   need?
                 </p>
                 <a
-                  href={assessmentHref}
+                  href={scheduleAssessmentHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   data-cursor-hover
                   className="mt-1 inline-block font-sans text-[0.92rem] font-medium text-paper underline decoration-paper/30 underline-offset-4 transition-colors hover:text-accent hover:decoration-accent">
                   Schedule a Free Assessment Session
