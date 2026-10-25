@@ -8,6 +8,8 @@ type Props = {
   density?: number;
   accentRatio?: number;
   interactive?: boolean;
+  /** Multiplier on each node's drift velocity. Defaults to the original speed. */
+  speed?: number;
 };
 
 type Node = {
@@ -24,6 +26,7 @@ export function Constellation({
   density = 0.00009,
   accentRatio = 0.12,
   interactive = true,
+  speed = 1,
 }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -69,8 +72,8 @@ export function Constellation({
         nodes = Array.from({ length: count }, () => ({
           x: Math.random() * W,
           y: Math.random() * H,
-          vx: (Math.random() - 0.5) * 0.12,
-          vy: (Math.random() - 0.5) * 0.12,
+          vx: (Math.random() - 0.5) * 0.12 * speed,
+          vy: (Math.random() - 0.5) * 0.12 * speed,
           r: Math.random() * 1.4 + 0.6,
           accent: Math.random() < accentRatio,
         }));
@@ -200,7 +203,7 @@ export function Constellation({
         canvas.removeEventListener("pointerleave", onLeave);
       }
     };
-  }, [density, accentRatio, interactive]);
+  }, [density, accentRatio, interactive, speed]);
 
   return <canvas ref={canvasRef} className={className} aria-hidden="true" />;
 }

@@ -22,7 +22,7 @@ export function Hero() {
       id="hero"
       className="relative isolate flex min-h-[100svh] flex-col overflow-clip bg-ink pt-20"
     >
-      <Constellation className="absolute inset-0 -z-10 h-full w-full" density={0.00011} />
+      <Constellation className="absolute inset-0 -z-10 h-full w-full" density={0.00011} speed={4} />
       <div className="grain -z-10" aria-hidden="true" />
       <div
         className="pointer-events-none absolute inset-0 -z-10"
