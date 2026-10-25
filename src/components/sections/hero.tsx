@@ -72,9 +72,22 @@ export function Hero() {
       </div>
 
       <div className="relative overflow-hidden border-t border-paper/10 py-5">
-        <div className="flex w-[200%] animate-marquee">
+        {/* Two identical copies back to back, sized by their own content
+            (`w-max`) rather than a `width: 200%` of the parent split into
+            two `width: 50%` halves. That nested-percentage version depends
+            on two separate percentage resolutions lining up exactly right,
+            which is fragile across mobile rendering engines — on at least
+            one real device the two copies ended up overlapping at the same
+            position instead of sitting side by side. `translateX(-50%)` in
+            the keyframe still works the same way here: the CSS spec
+            resolves a transform's percentage against the element's OWN
+            rendered width, and since both copies are identical, half of
+            this track's intrinsic width is always exactly one copy's
+            width — so the loop is seamless without needing an explicit
+            width on either level. */}
+        <div className="flex w-max animate-marquee">
           {[0, 1].map((dup) => (
-            <div key={dup} className="flex w-1/2 shrink-0 items-center">
+            <div key={dup} aria-hidden={dup === 1} className="flex shrink-0 items-center">
               {MARQUEE_ITEMS.map((item, i) => (
                 <span
                   key={`${dup}-${i}`}
