@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { MotionConfig } from "motion/react";
 import { bebasNeue, inter } from "@/lib/fonts";
 import { CustomCursor } from "@/components/ui/custom-cursor";
+import { LoadingScreen } from "@/components/ui/loading-screen";
 import { ToastProvider } from "@/components/ui/toast";
 import { ScrollToTop } from "@/components/ui/scroll-to-top";
 import { siteUrl } from "@/lib/seo";
@@ -50,6 +51,7 @@ export default function RootLayout({
           Skip to main content
         </a>
         <MotionConfig reducedMotion="user">
+          <LoadingScreen />
           <CustomCursor />
           <ToastProvider>{children}</ToastProvider>
           <ScrollToTop />
