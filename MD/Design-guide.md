@@ -415,7 +415,7 @@ Examples of the intended structure:
 * `/insights`
 * `/insights/article-slug`
 * `/contact`
-* `/business-growth-assessment`
+* `/assessment`
 
 These examples establish the URL style, not an instruction to invent additional pages.
 

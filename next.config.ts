@@ -20,6 +20,15 @@ const nextConfig: NextConfig = {
       },
     },
   },
+  async redirects() {
+    return [
+      {
+        source: "/business-growth-assessment",
+        destination: "/assessment",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

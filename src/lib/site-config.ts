@@ -23,7 +23,7 @@ export const navLinks = [
   { label: "Contact", href: "/contact" },
 ];
 
-export const assessmentHref = "/business-growth-assessment";
+export const assessmentHref = "/assessment";
 
 // "Schedule" CTAs book a live call directly, as distinct from the
 // self-serve on-site assessment form above.

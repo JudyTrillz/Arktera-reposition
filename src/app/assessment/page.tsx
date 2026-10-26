@@ -9,10 +9,10 @@ export const metadata = pageMetadata({
   title: "Free Business Growth Assessment",
   description:
     "Know what's holding your business back. Complete Arktera's Free Business Growth Assessment to share your goals and challenges for a focused conversation.",
-  path: "/business-growth-assessment",
+  path: "/assessment",
 });
 
-export default function BusinessGrowthAssessmentPage() {
+export default function AssessmentPage() {
   return (
     <>
       <SiteHeader />

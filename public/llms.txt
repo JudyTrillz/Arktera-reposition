@@ -9,7 +9,7 @@ Arktera Systems is a revenue systems consultancy for service businesses. Rather 
 - [Home](https://arkterasystems.com/): Overview of what Arktera does and how it helps service businesses find and fix what's holding back revenue.
 - [About](https://arkterasystems.com/about): Arktera's approach, the five-stage process (Assess, Diagnose, Design, Build, Measure), why Arktera takes a systems view, and the founder's perspective.
 - [The Revenue System](https://arkterasystems.com/revenue-systems): The six-stage framework — Demand, Trust, Conversion, Delivery, Retention, Referral — used to diagnose where a business's revenue system is breaking down.
-- [Free Business Growth Assessment](https://arkterasystems.com/business-growth-assessment): A free, structured assessment business owners can complete to share their goals, challenges, and performance ahead of a conversation with Arktera.
+- [Free Business Growth Assessment](https://arkterasystems.com/assessment): A free, structured assessment business owners can complete to share their goals, challenges, and performance ahead of a conversation with Arktera.
 - [Insights](https://arkterasystems.com/insights): Practical analysis on revenue performance, customer conversion, profitability, and operational efficiency.
 - [Contact](https://arkterasystems.com/contact): How to reach Arktera Systems directly.
 

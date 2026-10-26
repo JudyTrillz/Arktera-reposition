@@ -44,7 +44,7 @@ For each page: what it's about, what search intent it's built to catch, and the 
 
 ---
 
-### Free Business Growth Assessment — `/business-growth-assessment`
+### Free Business Growth Assessment — `/assessment`
 
 **Description (meta tag):** Know what's holding your business back. Complete Arktera's Free Business Growth Assessment to share your goals and challenges for a focused conversation.
 
