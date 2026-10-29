@@ -4,17 +4,49 @@ const ITEMS = [
   {
     number: "01",
     title: "What You'll Share",
-    body: "Answer questions about your business, growth objectives, current challenges, and performance. Estimates are fine where exact figures aren't available, and sharing your monthly revenue is optional.",
+    body: (
+      <>
+        Answer a few questions about your business, goals, challenges, and
+        performance. It takes{" "}
+        <strong className="font-semibold text-ink">5 to 10 minutes</strong>,
+        and most questions are multiple choice. Estimates are fine, and
+        sharing your monthly revenue is{" "}
+        <strong className="font-semibold text-ink">optional</strong>.
+      </>
+    ),
   },
   {
     number: "02",
     title: "What Happens Next",
-    body: "We'll review your responses and use them to prepare for a more focused conversation about your business and the areas that may need attention. You'll get a response from us within 1 business day.",
+    body: (
+      <>
+        We&apos;ll confirm we&apos;ve received your answers within{" "}
+        <strong className="font-semibold text-ink">1 business day</strong>.
+        Within{" "}
+        <strong className="font-semibold text-ink">3 business days</strong>,
+        we&apos;ll send you a short written summary of what we found. If
+        you&apos;d like to talk it through, you can book a call afterwards.
+        There&apos;s{" "}
+        <strong className="font-semibold text-ink">no obligation</strong>.
+      </>
+    ),
   },
   {
     number: "03",
     title: "What You'll Get",
-    body: "A clearer starting point for understanding your business challenges and deciding what deserves closer attention. A confirmed diagnosis or specific recommendations may require further discussion and investigation.",
+    body: (
+      <>
+        A summary of the{" "}
+        <strong className="font-semibold text-ink">one to three areas</strong>{" "}
+        that may be limiting your revenue, the reasons based on your answers,
+        and a suggested next step. It is based on the information you supply,
+        so it shows where to look closer. It is{" "}
+        <strong className="font-semibold text-ink">
+          not a full audit or a confirmed diagnosis
+        </strong>
+        .
+      </>
+    ),
   },
 ];
 
@@ -32,12 +64,36 @@ export function WhatToExpect() {
           </h2>
         </Reveal>
 
-        <div className="mt-12 grid gap-px overflow-hidden rounded-2xl bg-ink/10 sm:grid-cols-3 lg:mt-16">
+        <div className="mt-12 grid gap-6 sm:grid-cols-3 lg:mt-16">
           {ITEMS.map((item, i) => (
-            <Reveal key={item.number} delay={i * 0.08} className="bg-paper p-7 sm:p-8">
-              <span className="font-display text-sm text-accent">{item.number}</span>
-              <p className="mt-3 font-display text-lg text-ink">{item.title}</p>
-              <p className="mt-2.5 text-[0.92rem] leading-relaxed text-ink/60">{item.body}</p>
+            <Reveal
+              key={item.number}
+              delay={i * 0.08}
+              className="group relative isolate h-full overflow-hidden rounded-2xl border border-ink/10 bg-paper p-7 transition-all duration-300 hover:-translate-y-1 hover:border-ink/15 hover:shadow-[0_28px_56px_-28px_rgba(10,10,12,0.3)] sm:p-8"
+            >
+              <span
+                aria-hidden="true"
+                className="pointer-events-none absolute -right-2 -top-4 select-none font-display text-[5.5rem] leading-none text-ink/[0.045] transition-colors duration-300 group-hover:text-ink/[0.08]"
+              >
+                {item.number}
+              </span>
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 -z-10 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                style={{
+                  background:
+                    "radial-gradient(55% 45% at 12% 0%, rgba(255,59,48,0.08), transparent 70%)",
+                }}
+              />
+              <span className="relative font-display text-sm text-accent">
+                {item.number}
+              </span>
+              <p className="relative mt-3 font-display text-lg text-ink">
+                {item.title}
+              </p>
+              <p className="relative mt-2.5 text-[0.92rem] leading-relaxed text-ink/60">
+                {item.body}
+              </p>
             </Reveal>
           ))}
         </div>
