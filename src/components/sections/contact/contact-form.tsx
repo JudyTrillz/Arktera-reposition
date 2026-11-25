@@ -1,12 +1,12 @@
 "use client";
 
-import { useRef, useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { supabase } from "@/lib/supabase/client";
 import { Reveal } from "@/components/ui/reveal";
-import { Button, ArrowIcon } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { inputClasses } from "@/components/ui/form/styles";
 import { useToast } from "@/components/ui/toast";
-import { SendFlyAnimation } from "@/components/ui/send-fly-animation";
+import { SubmitButtonContent } from "@/components/ui/submit-button-content";
 import { assessmentHref, scheduleAssessmentHref, siteConfig } from "@/lib/site-config";
 
 const nextSteps = [
@@ -53,7 +53,14 @@ export function ContactForm() {
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const { showToast } = useToast();
-  const submitButtonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!submitted) return;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    document
+      .getElementById("send-message")
+      ?.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
+  }, [submitted]);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -262,27 +269,16 @@ export function ContactForm() {
 
                 <div className="mt-2 flex flex-col items-start gap-4">
                   <button
-                    ref={submitButtonRef}
                     type="submit"
                     disabled={submitting}
                     data-cursor-hover
                     className="group inline-flex min-h-13 items-center justify-center gap-2 rounded-full bg-ink px-8 font-sans text-[0.95rem] font-medium text-paper transition-colors duration-300 ease-out hover:bg-accent disabled:cursor-not-allowed disabled:opacity-60">
-                    {submitting ? (
-                      <>
-                        <span
-                          className="h-4 w-4 animate-spin rounded-full border-2 border-paper/30 border-t-paper"
-                          aria-hidden="true"
-                        />
-                        Sending…
-                      </>
-                    ) : (
-                      <>
-                        Send Message
-                        <ArrowIcon className="text-paper" />
-                      </>
-                    )}
+                    <SubmitButtonContent
+                      submitting={submitting}
+                      idleLabel="Send Message"
+                      submittingLabel="Sending"
+                    />
                   </button>
-                  <SendFlyAnimation active={submitting} anchorRef={submitButtonRef} />
                   <p className="text-[0.88rem] text-ink/45">
                     We aim to respond to inquiries within one business day.
                   </p>

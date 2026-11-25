@@ -12,7 +12,7 @@ import { StageChallenges } from "@/components/sections/assessment/stage-challeng
 import { StagePerformance } from "@/components/sections/assessment/stage-performance";
 import { Review } from "@/components/sections/assessment/review";
 import { AssessmentSuccess } from "@/components/sections/assessment/success";
-import { SendFlyAnimation } from "@/components/ui/send-fly-animation";
+import { SubmitButtonContent } from "@/components/ui/submit-button-content";
 
 const STAGE_COMPONENTS = [
   StageProfile,
@@ -25,7 +25,6 @@ export function AssessmentForm() {
   const form = useAssessmentForm();
   const anchorRef = useRef<HTMLDivElement>(null);
   const isFirstRender = useRef(true);
-  const submitButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (isFirstRender.current) {
@@ -34,6 +33,14 @@ export function AssessmentForm() {
     }
     anchorRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, [form.step]);
+
+  useEffect(() => {
+    if (!form.submitted) return;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    document
+      .getElementById("assessment-form")
+      ?.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
+  }, [form.submitted]);
 
   function handleContinue() {
     const failedKeys = form.goNext();
@@ -133,25 +140,17 @@ export function AssessmentForm() {
               {onReview ? (
                 <>
                   <button
-                    ref={submitButtonRef}
                     type="button"
                     onClick={form.submit}
                     disabled={form.submitting || !allStagesValid}
                     data-cursor-hover
-                    className="inline-flex min-h-13 items-center justify-center gap-2 rounded-full bg-ink px-8 font-sans text-[0.95rem] font-medium text-paper transition-colors duration-300 ease-out hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50">
-                    {form.submitting ? (
-                      <>
-                        <span
-                          className="h-4 w-4 animate-spin rounded-full border-2 border-paper/30 border-t-paper"
-                          aria-hidden="true"
-                        />
-                        Submitting…
-                      </>
-                    ) : (
-                      "Submit Assessment"
-                    )}
+                    className="group inline-flex min-h-13 items-center justify-center gap-2 rounded-full bg-ink px-8 font-sans text-[0.95rem] font-medium text-paper transition-colors duration-300 ease-out hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50">
+                    <SubmitButtonContent
+                      submitting={form.submitting}
+                      idleLabel="Submit Assessment"
+                      submittingLabel="Submitting"
+                    />
                   </button>
-                  <SendFlyAnimation active={form.submitting} anchorRef={submitButtonRef} />
                 </>
               ) : (
                 <button
